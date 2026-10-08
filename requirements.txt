@@ -1,0 +1,48 @@
+# weakzhiba crawler deps -- versions verified working on 2026-09-30.
+#
+#   python -m pip install -r requirements.txt
+#
+# Browser binaries are NOT in pip; see the migration notes. Run
+#   python -m patchright install chromium
+#
+# NOTE: keep this file pure ASCII. pip reads requirements files using the
+# system locale encoding (GBK on a Chinese Windows), so non-ASCII bytes here
+# blow up with UnicodeDecodeError before pip even resolves anything.
+# Chinese explanations live in the migration notes instead.
+
+# --- stealth browser session ---
+# AsyncStealthySession drives patchright's chromium (launch_persistent_context),
+# NOT camoufox. Don't install camoufox.
+scrapling==0.4.8
+# scrapling[fetchers] declares patchright==1.59.1, but 1.62.3 is what actually
+# runs here without problems. Pin the version that works.
+patchright==1.62.3
+# scrapling's _stealth.py does `from playwright.async_api import ...` directly,
+# so playwright is a hard dependency, not something patchright pulls in.
+playwright==1.60.0
+browserforge==1.2.4
+apify-fingerprint-datapoints==0.13.0
+msgspec==0.21.1
+anyio==4.13.0
+curl_cffi==0.15.0
+
+# --- scrapling's own deps (listed to pin versions; pip pulls them anyway) ---
+lxml==6.1.1
+cssselect==1.4.0
+orjson==3.11.9
+tld==0.13.2
+w3lib==2.4.1
+typing_extensions==4.15.0
+
+# --- captcha gap detection ---
+# docr.py imports cv2 / numpy at module top level; without them skip_vc
+# cannot even be imported.
+opencv-python==4.13.0.92
+numpy==2.4.6
+
+# --- optional: works without it, but noticeably better with it ---
+# docr.py does a lazy `import ddddocr` inside a function and falls back to a
+# hand-rolled NCC/chamfer detector on ImportError. This machine does not have
+# it installed and runs on the fallback path.
+# Measured over 27 captchas: ddddocr 27/27, NCC 17/27, chamfer 16/27.
+# ddddocr
